@@ -61,6 +61,7 @@ var SnakeGame = {
         clients: [],
        
 <<<<<<< HEAD
+<<<<<<< HEAD
     SnakeGameClient: 
     {
         websocket: null,
@@ -109,15 +110,25 @@ var SnakeGame = {
                     SnakeGame.SnakeGameDrawer.initDraw();  
                     break;
 =======
+=======
+        SnakeGameClient: {
+               
+                websocket: null,
+                       
+>>>>>>> parent of 9ea9926... Cleaned up SnakeGameClient.js
                 init: function(){
                         var wsUri = "ws://" + SNAKE_SERVER_IP;
  
                         var websocket = new WebSocket(wsUri);
+<<<<<<< HEAD
 >>>>>>> 62591ce1d028c00d1537f5cfb842533f5b7022e3
+=======
+>>>>>>> parent of 9ea9926... Cleaned up SnakeGameClient.js
                        
                         websocket.onopen = function(evt) {
                         };
                        
+<<<<<<< HEAD
 <<<<<<< HEAD
                     var snake_to_move = SnakeGame.clients[obj.msg.snakeID];
 
@@ -143,11 +154,16 @@ var SnakeGame = {
                
                 case SnakeMessage.TYPES.REMOVE_SNAKE.id:
 =======
+=======
+>>>>>>> parent of 9ea9926... Cleaned up SnakeGameClient.js
                         websocket.onclose = function(evt) {
                                 alert("CONNECTION LOST");
                                 SnakeGame.SnakeGameDrawer.die(SnakeGame.snake);
                         };
+<<<<<<< HEAD
 >>>>>>> 62591ce1d028c00d1537f5cfb842533f5b7022e3
+=======
+>>>>>>> parent of 9ea9926... Cleaned up SnakeGameClient.js
                        
                         websocket.onmessage = function(evt) {
                                 SnakeGame.SnakeGameClient.dispatchMsg(JSON.parse(evt.data));
@@ -338,6 +354,7 @@ var SnakeGame = {
         },
        
 <<<<<<< HEAD
+<<<<<<< HEAD
         sendMove: function(_move)
         {       
             var msg = new SnakeMessage(SnakeMessage.TYPES.MOVE, 
@@ -349,13 +366,18 @@ var SnakeGame = {
         },     
     },
 =======
+=======
+>>>>>>> parent of 9ea9926... Cleaned up SnakeGameClient.js
         WSAD_CODES: {
                 UP: 87,
                 DOWN: 83,
                 LEFT: 65,
                 RIGHT: 68,
         },
+<<<<<<< HEAD
 >>>>>>> 62591ce1d028c00d1537f5cfb842533f5b7022e3
+=======
+>>>>>>> parent of 9ea9926... Cleaned up SnakeGameClient.js
        
         ILLEGAL_MOVE: undefined,
        
@@ -426,6 +448,7 @@ var SnakeGame = {
                 }
         },
 <<<<<<< HEAD
+<<<<<<< HEAD
     },
    
     WSAD_CODES: 
@@ -456,6 +479,8 @@ var SnakeGame = {
         var inKey = e;
 =======
 >>>>>>> 62591ce1d028c00d1537f5cfb842533f5b7022e3
+=======
+>>>>>>> parent of 9ea9926... Cleaned up SnakeGameClient.js
 
         returnKeyCode: function(e){
             //65 L
@@ -465,14 +490,18 @@ var SnakeGame = {
             if(key === 65)
             {
 <<<<<<< HEAD
+<<<<<<< HEAD
                 return;
 =======
+=======
+>>>>>>> parent of 9ea9926... Cleaned up SnakeGameClient.js
                 switch(currentDir){
                     case 65 : currentDir = 83; break;
                     case 83 : currentDir = 68; break;
                     case 87 : currentDir = 65; break;
                     case 68 : currentDir = 87; break;
                 }
+<<<<<<< HEAD
 >>>>>>> 62591ce1d028c00d1537f5cfb842533f5b7022e3
             }
             else if(key === 68)
@@ -535,6 +564,22 @@ var SnakeGame = {
        
 };
 >>>>>>> 62591ce1d028c00d1537f5cfb842533f5b7022e3
+=======
+            }
+            else if(key === 68)
+            {
+                switch(currentDir){
+                    case 65 : currentDir = 87; break;
+                    case 83 : currentDir = 65; break;
+                    case 87 : currentDir = 68; break;
+                    case 68 : currentDir = 83; break;
+                }
+            }
+
+        }
+       
+};
+>>>>>>> parent of 9ea9926... Cleaned up SnakeGameClient.js
 
 function componentToHex(c) {
     var hex = c.toString(16);
@@ -573,4 +618,8 @@ function HSVtoRGB(h, s, v) {
 function hsvToHex(h, s, v) {
     var rgb = HSVtoRGB(h, s, v);
     return rgbToHex(rgb.r, rgb.g, rgb.b);
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> parent of 9ea9926... Cleaned up SnakeGameClient.js
