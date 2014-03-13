@@ -77,13 +77,15 @@ var SnakeGame =
            
             websocket.onopen = function(evt) {};
            
-            websocket.onclose = function(evt) {
-                    alert("CONNECTION LOST");
-                    SnakeGame.SnakeGameDrawer.die(SnakeGame.snake);
+            websocket.onclose = function(evt) 
+            {
+                alert("CONNECTION LOST");
+                SnakeGame.SnakeGameDrawer.die(SnakeGame.snake);
             };
            
-            websocket.onmessage = function(evt) {
-                    SnakeGame.SnakeGameClient.dispatchMsg(JSON.parse(evt.data));
+            websocket.onmessage = function(evt) 
+            {
+                SnakeGame.SnakeGameClient.dispatchMsg(JSON.parse(evt.data));
             };
            
             websocket.onerror = function(evt) {};
@@ -103,7 +105,7 @@ var SnakeGame =
                     SnakeGame.SnakeGameClient.updateBoard(obj.msg.board);
                     obj.msg.clients.forEach(function(s)
                     {
-                             SnakeGame.clients[s.snakeID] = new Snake(s.body);
+                        SnakeGame.clients[s.snakeID] = new Snake(s.body);
                     });
                    
                     SnakeGameBoard.updateBuffer(SnakeGame.snake);
@@ -117,12 +119,12 @@ var SnakeGame =
 
                     if(!snake_to_move.move(obj.msg.move))
                     {
-                            SnakeGame.SnakeGameDrawer.die(snake_to_move);
-                            SnakeGame.clients[obj.msg.snakeID] = undefined;
+                        SnakeGame.SnakeGameDrawer.die(snake_to_move);
+                        SnakeGame.clients[obj.msg.snakeID] = undefined;
                     }
                     else
                     {
-                            SnakeGame.SnakeGameDrawer.update();
+                        SnakeGame.SnakeGameDrawer.update();
                     }
                    
                     break;
@@ -183,7 +185,7 @@ var SnakeGame =
         {       
             var msg = new SnakeMessage(SnakeMessage.TYPES.MOVE, 
             {
-                    move: _move,
+                move: _move,
             });
            
             this.websocket.send(JSON.stringify(msg));
@@ -297,7 +299,7 @@ var SnakeGame =
         console.log(currentDir);
         if(SnakeGame.snake.status === SnakeGame.snake.SNAKE_STATES.DEAD)
         {
-                return;
+            return;
         }
 
         var inKey = e;
@@ -310,13 +312,13 @@ var SnakeGame =
 
             if(SnakeGame.snake.status === SnakeGame.snake.SNAKE_STATES.DEAD)
             {
-                    return;
+                return;
             }
             
             var current_move = SnakeGame.MOVES[currentDir];
             if(!current_move || (currentDir === SnakeGame.ILLEGAL_MOVE))
             {
-                    return;
+                return;
             }
            
             // block turn back
@@ -327,12 +329,12 @@ var SnakeGame =
             // if snake crashed
             if(!SnakeGame.snake.move(current_move))
             {
-                    SnakeGame.SnakeGameDrawer.die(SnakeGame.snake);
+                SnakeGame.SnakeGameDrawer.die(SnakeGame.snake);
             }
             // if snake is still alive
             else
             {
-                    SnakeGame.SnakeGameDrawer.update();                    
+                SnakeGame.SnakeGameDrawer.update();                    
             }
 
         }, 100); 
@@ -341,7 +343,7 @@ var SnakeGame =
         var current_move = SnakeGame.MOVES[currentDir];
         if(!current_move || (currentDir === SnakeGame.ILLEGAL_MOVE))
         {
-                return;
+            return;
         }
        
         // block turn back
@@ -352,12 +354,12 @@ var SnakeGame =
         // if snake crashed
         if(!SnakeGame.snake.move(current_move))
         {
-                SnakeGame.SnakeGameDrawer.die(SnakeGame.snake);
+            SnakeGame.SnakeGameDrawer.die(SnakeGame.snake);
         }
         // if snake is still alive
         else
         {
-                SnakeGame.SnakeGameDrawer.update();                    
+            SnakeGame.SnakeGameDrawer.update();                    
         }
     },
 

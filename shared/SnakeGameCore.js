@@ -8,8 +8,8 @@ var BLOCKS_Y = BOARD_H / SEGMENT_SIZE;
 
 scores = [];
 
-var Segment = function (x, y, type, snakeID){
-	
+var Segment = function (x, y, type, snakeID)
+{	
 	// pixels...
 	this.x = x;
 	this.y = y;
@@ -23,38 +23,46 @@ var Segment = function (x, y, type, snakeID){
 	this.snakeID = snakeID;
 };
 
-Segment.SEGMENT_TYPES = {
-	BLANK: {
+Segment.SEGMENT_TYPES = 
+{
+	BLANK: 
+	{
 		id: 1,
 		color: "#FFF",
 	},
 	
-	RED_BLOCK: {
+	RED_BLOCK: 
+	{
 		id: 2,
 		color: "#F23",
 	},
 	
-	SNAKE: {
+	SNAKE: 
+	{
 		id: 3,
 		color: "#AA2344",
 	},
 	
-	DEAD_SNAKE: {
+	DEAD_SNAKE: 
+	{
 		id: 4,
 		color: "#A8969D",
 	},
 };
 
-Segment.prototype.getColor = function(){
+Segment.prototype.getColor = function()
+{
 	return this.color || this.type.color;
 };
 
-Segment.getTypeByValue = function(v){
-
+Segment.getTypeByValue = function(v)
+{
 	var key = null;
 	
-	Object.keys(Segment.SEGMENT_TYPES).filter(function(k){
-		if(!key && Segment.SEGMENT_TYPES[k].id === v){
+	Object.keys(Segment.SEGMENT_TYPES).filter(function(k)
+	{
+		if(!key && Segment.SEGMENT_TYPES[k].id === v)
+		{
 			key = k;
 		}
 	});
@@ -62,51 +70,60 @@ Segment.getTypeByValue = function(v){
 	return Segment.SEGMENT_TYPES[key];
 };
 
-var SnakeMessage = function(_type, _msg){
+var SnakeMessage = function(_type, _msg)
+{
 	this.type = _type;
 	this.msg = _msg;
 };
 
-SnakeMessage.TYPES = {
+SnakeMessage.TYPES = 
+{
 	// message contains current board
-	INIT: {
+	INIT: 
+	{
 		id: 1,
 	},
 	
 	// message contains new move of snake
-	MOVE: {
+	MOVE: 
+	{
 		id: 2,
 	},
 	
 	// message sends on new clients connection
-	NEW_SNAKE: {
+	NEW_SNAKE: 
+	{
 		id: 3,
 	},
 	
 	// message sends when client disconnect
-	REMOVE_SNAKE: {
+	REMOVE_SNAKE: 
+	{
 		id: 4,
 	},
 	
-	NEW_BLOCK: {
+	NEW_BLOCK: 
+	{
 		id: 5,
 	},
 
 	// message to update scores on the client
-	SCORE: {
+	SCORE: 
+	{
 		id: 6,
 	}
 };
 
-function colorGen(){
+function colorGen()
+{
 	this.h = Math.random();
 	this.s = 1.0;
 	this.v = .75;
-
 }
 
-
-var Snake = function(body){ //TODO snake could be instantined as a body array
+var Snake = function(body)
+{ 
+	//TODO snake could be instantined as a body array
 	
 	this.body = body;
 	this.snakeID = body[0].snakeID;
@@ -121,11 +138,13 @@ var Snake = function(body){ //TODO snake could be instantined as a body array
  	this.colorset = [];
 	this.colorset[0] = this.initColor;
 	console.log("Init color: " + this.initColor);
-	for(var loop = 1; loop < 6; loop++) {
+	for(var loop = 1; loop < 6; loop++) 
+	{
 		this.colorset[loop] = hsvToHex(this.initHSV.h,(10-loop)/10.0,this.initHSV.v);
 	}
 	this.color = this.initColor;
-	this.SNAKE_STATES = {
+	this.SNAKE_STATES = 
+	{
 		LIVE: 1,
 		DEAD: 2,
 	};
@@ -133,67 +152,78 @@ var Snake = function(body){ //TODO snake could be instantined as a body array
 	this.status = this.SNAKE_STATES.LIVE;
 };
 
-Snake.prototype.getTail = function(){
+Snake.prototype.getTail = function()
+{
 	return this.body[this.body.length - 1];
 };
 
-Snake.prototype.getHead = function(){
+Snake.prototype.getHead = function()
+{
 	console.log("$$$$$$$$$$$ SNAKE ID: " + this.snakeID);
 	return this.body[0];
 };
 
-Snake.prototype.getSnakeID = function() {
+Snake.prototype.getSnakeID = function() 
+{
 	return this.snakeID;
 };
 
-Snake.prototype.isAlive = function(){
+Snake.prototype.isAlive = function()
+{
 	return this.status === this.SNAKE_STATES.LIVE;
 }
 
-Snake.prototype.move = function(move){
+Snake.prototype.move = function(move)
+{
 	console.log("$$$$$$$$$$$ SNAKE ID: " + this.snakeID);
 	var current_head = this.getHead();
 	var new_head_segment = new Segment(current_head.x + move[0], current_head.y + move[1], Segment.SEGMENT_TYPES.SNAKE, this.snakeID);
 	console.log(this.initColor);
 	new_head_segment.color = this.initColor;
-	//new_head_segment.color = "#0000ff";
 	return SnakeGameBoard.moveSnake(this, new_head_segment);
 };
 
-Snake.prototype.die = function(){
+Snake.prototype.die = function()
+{
 	this.status = this.SNAKE_STATES.DEAD;
 };
 
-var SnakeGameBoard = {
-
+var SnakeGameBoard = 
+{
 	to_update: [],
 	
-	board: (function(){
+	board: (function()
+	{
 		var board = [];
-		for(var y = 0; y < BLOCKS_Y; y++){
-	
+		for(var y = 0; y < BLOCKS_Y; y++)
+		{
 			board[y] = [];
 			
-			for(var x = 0; x < BLOCKS_X; x++){
+			for(var x = 0; x < BLOCKS_X; x++)
+			{
 				board[y].push(new Segment(x * SEGMENT_SIZE, y * SEGMENT_SIZE));
 			};
 		}
 		return board;
 	})(),
 	
-	printBoard: function(){
-		
-		this.board.forEach(function(row){
+	printBoard: function()
+	{	
+		this.board.forEach(function(row)
+		{
 			var l = "";
-			row.forEach(function(segment){
+			row.forEach(function(segment)
+			{
 				l += (segment.type.id !== 1) ? segment.type.id : '.';
 			});
 			console.info(l);
 		});
+
 		console.info("--------------");
 	},
 	
-	deleteSegment: function(s){
+	deleteSegment: function(s)
+	{
 		var to_erase = this.board[s.y / SEGMENT_SIZE][s.x / SEGMENT_SIZE];
 		to_erase.type = Segment.SEGMENT_TYPES.BLANK;
 		to_erase.color = Segment.SEGMENT_TYPES.BLANK.color;
@@ -201,52 +231,63 @@ var SnakeGameBoard = {
 		this.to_update.push(to_erase);
 	},
 	
-	deleteSnake: function(snake){
-		snake.body.forEach(function(segment){
-			//SnakeGameBoard.deleteSegment(segment);
+	deleteSnake: function(snake)
+	{
+		snake.body.forEach(function(segment)
+		{
 			segment.type = Segment.SEGMENT_TYPES.BLANK;
 		});
 	},
 	
-	putSegment: function(s){
+	putSegment: function(s)
+	{
 		this.board[s.y / SEGMENT_SIZE][s.x / SEGMENT_SIZE] = s;
 		this.to_update.push(s);
 	},
 	
-	getSegmentsToUpdate: function(){
+	getSegmentsToUpdate: function()
+	{
 		return this.to_update;
 	},
 	
-	getSegment: function(x, y){
+	getSegment: function(x, y)
+	{
 		return this.board[y][x];
 	},
 	
-	isMoveCrossBoard: function(move){
+	isMoveCrossBoard: function(move)
+	{
 		return ((move.x < 0) || (move.y < 0) || (move.x >= BOARD_W) || (move.y >= BOARD_H));
 	},
 	
-	teleport: function(move){
-		if(move.x < 0){
+	teleport: function(move)
+	{
+		if(move.x < 0)
+		{
 			move.x = BOARD_W + move.x;
 		}
 		
-		if(move.y < 0){
+		if(move.y < 0)
+		{
 			move.y = BOARD_H + move.y;
 		}
 		
-		if(move.x >= BOARD_W){
+		if(move.x >= BOARD_W)
+		{
 			move.x = move.x - BOARD_W;
 		}
 		
-		if(move.y >= BOARD_H){
+		if(move.y >= BOARD_H)
+		{
 			move.y = move.y - BOARD_H;
 		}
 	},
 	
-	updateBuffer: function(snake){
-		//var colors = ["#5CA315", "#69B81A",  "#74CC1D", "#81DE23", "#8BF026", "#92FA2A", "#A2FF45"];
+	updateBuffer: function(snake)
+	{
 		var colors = snake.colorset;
-		for(var i = 0; i < snake.body.length; i++){
+		for(var i = 0; i < snake.body.length; i++)
+		{
 			var current_segment = snake.body[i];
 			current_segment.color = colors[i] || colors[colors.length - 1];
 			
@@ -254,21 +295,24 @@ var SnakeGameBoard = {
 		};
 	},
 	
-	moveSnake: function(snake, new_head_segment){
-		
-		if(this.isMoveCrossBoard(new_head_segment)){
+	moveSnake: function(snake, new_head_segment)
+	{
+		if(this.isMoveCrossBoard(new_head_segment))
+		{
 			this.teleport(new_head_segment);
 		}
 		
 		var move_result = SnakeGameBoard.snakeGameCollisionDetector.processMove(new_head_segment);
 		
-		if(move_result === SnakeGameBoard.snakeGameCollisionDetector.COLLISION_STATES.SNAKE){
+		if(move_result === SnakeGameBoard.snakeGameCollisionDetector.COLLISION_STATES.SNAKE)
+		{
 			SnakeGameBoard.deleteSnake(snake);
 			return false;
 		}
 		
 		// cut off snake's tail or eat new segment
-		if(move_result !== SnakeGameBoard.snakeGameCollisionDetector.COLLISION_STATES.EATABLE_BLOCK){
+		if(move_result !== SnakeGameBoard.snakeGameCollisionDetector.COLLISION_STATES.EATABLE_BLOCK)
+		{
 			SnakeGameBoard.deleteSegment(snake.body.pop());
 		}
 
@@ -278,25 +322,25 @@ var SnakeGameBoard = {
 		
 		this.updateBuffer(snake);
 		
-		//this.printBoard();
 		return true;
 	},
 	
-	snakeGameCollisionDetector: {
-		
-		COLLISION_STATES: {
+	snakeGameCollisionDetector: 
+	{	
+		COLLISION_STATES: 
+		{
 			SNAKE: 1,
 			EATABLE_BLOCK: 2,
 		},
 		
-		processMove: function(head){
-
+		processMove: function(head)
+		{
 			var block = SnakeGameBoard.getSegment(head.x / SEGMENT_SIZE, head.y / SEGMENT_SIZE);
 			
-			switch (block.type.id) {
+			switch (block.type.id) 
+			{
 				case Segment.SEGMENT_TYPES.RED_BLOCK.id:
-					//console.log("@@@@@@@@@@@@@@@@@ SNAKE ID: " + head.snakeID);
-					//SnakeGameServer.clients[head.snakeID].score++;
+
 					if(scores[head.snakeID] == NaN || scores[head.snakeID] == undefined || scores[head.snakeID] == null)
 					{
 						scores[head.snakeID] = {score: 0, color: head.color};
@@ -321,11 +365,11 @@ var SnakeGameBoard = {
 					break;
 			}
 		},
-	},
-	
+	},	
 };
 
-if(typeof exports !== "undefined"){
+if(typeof exports !== "undefined")
+{
 	exports.SEGMENT_SIZE = SEGMENT_SIZE;
 	exports.BOARD_W = BOARD_W;
 	exports.BOARD_H = BOARD_H;
@@ -340,57 +384,22 @@ if(typeof exports !== "undefined"){
 	exports.scores = scores;
 }
 
-function randomHexCode() {
-	var a = new Array();
-        for(var i = 0; i < 6; i++)
-        {
-                a[i] = Math.round(Math.random()*16);
-                if(a[i]>9)
-                {
-                        switch(a[i])
-                        {
-                                case 10:
-                                        a[i]="a";
-                                        break;
-                                case 11:
-                                        a[i]="b";
-                                        break;
-                                case 12:
-                                        a[i]="c";
-                                        break;
-                                case 13:
-                                        a[i]="d";
-                                        break;
-                                case 14:
-                                        a[i]="e";
-                                        break;
-                                case 15:
-                                        a[i]="f";
-                                        break;
-                        }
-                }
-        }
-        var hex = "";
-        for(var i = 0; i<6;i++)
-        {
-                var n = a[i].toString();
-                hex += n;
-        }
-        hex = "#"+hex;
-        return hex;
-}
-function componentToHex(c) {
+function componentToHex(c) 
+{
     var hex = c.toString(16);
     return hex.length == 1 ? "0" + hex : hex;
 }
 
-function rgbToHex(r, g, b) {
+function rgbToHex(r, g, b) 
+{
     return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
 }
 
-function HSVtoRGB(h, s, v) {
+function HSVtoRGB(h, s, v) 
+{
     var r, g, b, i, f, p, q, t;
-    if (h && s === undefined && v === undefined) {
+    if (h && s === undefined && v === undefined) 
+    {
         s = h.s, v = h.v, h = h.h;
     }
     i = Math.floor(h * 6);
@@ -398,7 +407,8 @@ function HSVtoRGB(h, s, v) {
     p = v * (1 - s);
     q = v * (1 - f * s);
     t = v * (1 - (1 - f) * s);
-    switch (i % 6) {
+    switch (i % 6) 
+    {
         case 0: r = v, g = t, b = p; break;
         case 1: r = q, g = v, b = p; break;
         case 2: r = p, g = v, b = t; break;
@@ -406,14 +416,16 @@ function HSVtoRGB(h, s, v) {
         case 4: r = t, g = p, b = v; break;
         case 5: r = v, g = p, b = q; break;
     }
-    return {
+    return 
+    {
         r: Math.floor(r * 255),
         g: Math.floor(g * 255),
         b: Math.floor(b * 255)
     };
 }
 
-function hsvToHex(h, s, v) {
+function hsvToHex(h, s, v) 
+{
     var rgb = HSVtoRGB(h, s, v);
     return rgbToHex(rgb.r, rgb.g, rgb.b);
 }

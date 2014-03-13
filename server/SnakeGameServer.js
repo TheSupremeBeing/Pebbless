@@ -14,23 +14,24 @@ var BLOCKS_Y = SnakeGameCore.BLOCKS_Y;
 var RED_BLOCKS_AMOUNT = 100;
 
 var Segment = SnakeGameCore.Segment;
-var Snake = SnakeGameCore.Snake;
+var Snake 	= SnakeGameCore.Snake;
 var SnakeMessage = SnakeGameCore.SnakeMessage;
 
 var PACKET_ID = 0;
 
-var SnakeGameServer = {
-
+var SnakeGameServer = 
+{
 	snake_board: SnakeGameCore.SnakeGameBoard,
 	clients: [],
 	connections: [],
 		
-	init: function(){
-		
+	init: function()
+	{	
 		var server = http.createServer(function(request, response){});
 		server.listen(4040, function(){});
 
-		var wsServer = new WebSocketServer({
+		var wsServer = new WebSocketServer(
+		{
 		    httpServer: server,
 		});
 		
@@ -38,8 +39,8 @@ var SnakeGameServer = {
 		
 		SnakeGameServer.proxyGameBoardMethods();
 
-		wsServer.on("request", function(request) {
-			
+		wsServer.on("request", function(request) 
+		{	
 			// current client's ID
 			var SNAKE_ID = SnakeGameServer.clients.length;
 
@@ -54,23 +55,27 @@ var SnakeGameServer = {
 		    connection.send(JSON.stringify(SnakeGameServer.initMessage(SNAKE_ID)));
 		    
 		    // notice others clients about new snake 
-		    SnakeGameServer.broadcastMessage(new SnakeMessage(SnakeMessage.TYPES.NEW_SNAKE, {
+		    SnakeGameServer.broadcastMessage(new SnakeMessage(SnakeMessage.TYPES.NEW_SNAKE, 
+		    {
 		    	snake: SnakeGameServer.clients[SNAKE_ID],
 		    }), SNAKE_ID);
 		    
-		    connection.on("message", function(message) {
+		    connection.on("message", function(message) 
+		    {
 		    	SnakeGameServer.parseMessage(message, SNAKE_ID);
 		    });
 
-		    connection.on("close", function(connection) {
+		    connection.on("close", function(connection) 
+		    {
 		    	SnakeGameServer.removeSnake(SNAKE_ID);
 		    	SnakeGameServer.connections[SNAKE_ID] = null;
 
 		    	// if clients disconnect when snake was alive
-		    	if(SnakeGameServer.clients[SNAKE_ID].isAlive()){
-
+		    	if(SnakeGameServer.clients[SNAKE_ID].isAlive())
+		    	{
 				    // notice others clients about new snake 
-				    SnakeGameServer.broadcastMessage(new SnakeMessage(SnakeMessage.TYPES.REMOVE_SNAKE, {
+				    SnakeGameServer.broadcastMessage(new SnakeMessage(SnakeMessage.TYPES.REMOVE_SNAKE, 
+				    {
 				    	snakeID: SNAKE_ID,
 				    }), SNAKE_ID);
 			    }
@@ -80,29 +85,33 @@ var SnakeGameServer = {
 		});
 	},
 	
-	proxyGameBoardMethods: function(){
-		
+	proxyGameBoardMethods: function()
+	{	
 		var old_function = SnakeGameServer.snake_board.snakeGameCollisionDetector.processMove;
-		SnakeGameServer.snake_board.snakeGameCollisionDetector.processMove = function(head){
+		SnakeGameServer.snake_board.snakeGameCollisionDetector.processMove = function(head)
+		{
 			var result = old_function(head);
 			
-			if(result === SnakeGameServer.snake_board.snakeGameCollisionDetector.COLLISION_STATES.EATABLE_BLOCK){
+			if(result === SnakeGameServer.snake_board.snakeGameCollisionDetector.COLLISION_STATES.EATABLE_BLOCK)
+			{
 				SnakeGameServer.putRedBlock();
 			}
-			
 			return result;
 		};
+
 		var scoreboard = SnakeGameCore.scores;
-		for(var loop = 0; loop < scoreboard; loop++) {
+		for(var loop = 0; loop < scoreboard; loop++) 
+		{
 			var id = clients[loop].snakeID;
 			clients[loop].score = scoreboard[id];
 			console.log("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& NEW SCORE FOR " + clients[loop].id + " IS " + clients[loop].score);
 		}
 	},
 	
-	initMessage: function(SNAKE_ID){
-		
-		var msg_content = {
+	initMessage: function(SNAKE_ID)
+	{	
+		var msg_content = 
+		{
 			head: SnakeGameServer.clients[SNAKE_ID].getHead(),
 			board: SnakeGameServer.getNonBlankSegments(),
 			clients: SnakeGameServer.clients,
@@ -111,8 +120,8 @@ var SnakeGameServer = {
 		return new SnakeMessage(SnakeMessage.TYPES.INIT, msg_content);
 	},
 	
-	spawnNewSnake: function(SNAKE_ID){
-		
+	spawnNewSnake: function(SNAKE_ID)
+	{	
 		var new_snake_head = SnakeGameServer.putBlock(new Segment(null, null, Segment.SEGMENT_TYPES.SNAKE, SNAKE_ID));
 		console.info("\t+snake id = " + SNAKE_ID);
 		
@@ -122,8 +131,10 @@ var SnakeGameServer = {
 	},
 	
 	// convert segment object to object easy to send and receive
-	serializeSegment: function(segment){
-		return {
+	serializeSegment: function(segment)
+	{
+		return 
+		{
 			x: segment.x,
 			y: segment.y,
 			typeV: segment.type.id,
@@ -132,13 +143,16 @@ var SnakeGameServer = {
 		};
 	},
 	
-	getNonBlankSegments: function(){
+	getNonBlankSegments: function()
+	{
 		var not_blank = [];
 		
-		this.snake_board.board.forEach(function(row){
-
-			row.forEach(function(segment){
-				if(segment.type.id !== Segment.SEGMENT_TYPES.BLANK.id){
+		this.snake_board.board.forEach(function(row)
+		{
+			row.forEach(function(segment)
+			{
+				if(segment.type.id !== Segment.SEGMENT_TYPES.BLANK.id)
+				{
 					not_blank.push(SnakeGameServer.serializeSegment(segment));
 				}
 			});
@@ -147,31 +161,37 @@ var SnakeGameServer = {
 		return not_blank;
 	},
 	
-	setInitialRedBlock: function(n){
-		for(var i = 0; i < n; i++){
+	setInitialRedBlock: function(n)
+	{
+		for(var i = 0; i < n; i++)
+		{
 			SnakeGameServer.putRedBlock();
 		}
 	},
 	
-	removeSnake: function(snakeID){
-		
+	removeSnake: function(snakeID)
+	{	
 		var snake = this.clients[snakeID];
 		
-		snake.body.forEach(function(s){
+		snake.body.forEach(function(s)
+		{
 			s.type = Segment.SEGMENT_TYPES.BLANK;
 		});
 		
 		snake = undefined;
 	},
 	
-	putRedBlock: function(){
+	putRedBlock: function()
+	{
 		SnakeGameServer.putBlock(new Segment(null, null, Segment.SEGMENT_TYPES.RED_BLOCK, null));
 	},
 	
 	// draw random position for segment
-	putBlock: function(segment){
+	putBlock: function(segment)
+	{
 		var x, y;
-		do{
+		do
+		{
 			x = Math.floor(((Math.random() * BOARD_W) / SEGMENT_SIZE)) * SEGMENT_SIZE;
 			y = Math.floor(((Math.random() * BOARD_H) / SEGMENT_SIZE)) * SEGMENT_SIZE;
 		}
@@ -182,7 +202,8 @@ var SnakeGameServer = {
 		
 		SnakeGameServer.snake_board.putSegment(segment);
 
-		SnakeGameServer.broadcastMessage(new SnakeMessage(SnakeMessage.TYPES.NEW_BLOCK, {
+		SnakeGameServer.broadcastMessage(new SnakeMessage(SnakeMessage.TYPES.NEW_BLOCK, 
+		{
 	    	new_block: segment,
 	    }), -1);
 		
@@ -190,14 +211,16 @@ var SnakeGameServer = {
 	},
 	
 	// sending new messages to all clients except one with snakeID
-	broadcastMessage: function(msg, snakeID){
-		
+	broadcastMessage: function(msg, snakeID)
+	{
 		var colors = ["green", "magenta", "yellow"];
 		
 		var log = "PACKET ID:" + ++PACKET_ID + "\t#" + snakeID;
 
-		this.clients.forEach(function(c, i){
-			if(i === snakeID){
+		this.clients.forEach(function(c, i)
+		{
+			if(i === snakeID)
+			{
 				return;
 			}
 			
@@ -209,13 +232,16 @@ var SnakeGameServer = {
 		console.info(log[colors[snakeID] || "grey"]);
 	},
 	
-	parseMessage: function(data, snakeID){
-		if(data.type === "utf8"){
+	parseMessage: function(data, snakeID)
+	{
+		if(data.type === "utf8")
+		{
 			var content = JSON.parse(data.utf8Data);
 			
-			switch(content.type.id){
-			
+			switch(content.type.id)
+			{
 				case SnakeMessage.TYPES.MOVE.id:
+
 					var snake = SnakeGameServer.clients[snakeID];
 					snake.move(content.msg.move);
 					
@@ -228,44 +254,5 @@ var SnakeGameServer = {
 		}
 	},
 };
-function randomHexCode() {
-	var a = new Array();
-        for(var i = 0; i < 6; i++)
-        {
-                a[i] = Math.round(Math.random()*16);
-                if(a[i]>9)
-                {
-                        switch(a[i])
-                        {
-                                case 10:
-                                        a[i]="a";
-                                        break;
-                                case 11:
-                                        a[i]="b";
-                                        break;
-                                case 12:
-                                        a[i]="c";
-                                        break;
-                                case 13:
-                                        a[i]="d";
-                                        break;
-                                case 14:
-                                        a[i]="e";
-                                        break;
-                                case 15:
-                                        a[i]="f";
-                                        break;
-                        }
-                }
-        }
-        var hex = "";
-        for(var i = 0; i<6;i++)
-        {
-                var n = a[i].toString();
-                hex += n;
-        }
-        hex = "#"+hex;
-        return hex;
-}
-SnakeGameServer.init();
 
+SnakeGameServer.init();
